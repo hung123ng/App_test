@@ -4,7 +4,6 @@ import commons.BasePage;
 import org.openqa.selenium.WebDriver;
 import org.testng.Assert;
 import pageUIs.CartPageUI;
-import pageUIs.ProductDetailsPageUI;
 
 public class ProductCart extends BasePage {
     private WebDriver driver;

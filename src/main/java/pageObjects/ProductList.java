@@ -1,10 +1,9 @@
 package pageObjects;
 
-import commons.BasePage;
 import org.openqa.selenium.WebDriver;
 import org.testng.Assert;
 
-import pageUIs.HomePageUI;
+import commons.BasePage;
 import pageUIs.ProductListPageUI;
 
 public class ProductList extends BasePage {

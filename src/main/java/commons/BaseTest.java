@@ -17,7 +17,6 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Optional;
 import org.testng.annotations.Parameters;
-import utilities.ScreenshotHelper;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -28,7 +27,6 @@ import java.util.HashMap;
 
 public class BaseTest {
     protected WebDriver driver;
-    protected ScreenshotHelper screenshotHelper;
 
     @Parameters({"browser", "url"})
     @BeforeMethod
@@ -39,21 +37,10 @@ public class BaseTest {
         driver.manage().window().maximize();
 
         // Initialize ScreenshotHelper
-        screenshotHelper = new ScreenshotHelper(driver, "test-output/screenshots");
     }
 
     @AfterMethod
     public void afterMethod(ITestResult result) {
-        // Chụp ảnh khi test failed
-        if (result.getStatus() == ITestResult.FAILURE) {
-            screenshotHelper.takeScreenshotForAllure("Test_Failed_" + result.getMethod().getMethodName());
-        } else if (result.getStatus() == ITestResult.SUCCESS) {
-            screenshotHelper.takeScreenshotForAllure("Test_Passed_" + result.getMethod().getMethodName());
-        }
-
-        // Final screenshot
-        screenshotHelper.takeScreenshotForAllure("Test_End");
-
         // Close browser
         if (driver != null) {
             driver.quit();
@@ -105,13 +92,12 @@ public class BaseTest {
                 options.addArguments("--disable-gpu");
 
                 // Set window size lớn để tránh scroll bar
-                options.addArguments("--window-size=1920,1080");
                 options.addArguments("--start-maximized");
 
                 // Enable DevTools cho CDP commands
                 options.setExperimentalOption("useAutomationExtension", false);
                 options.setExperimentalOption("excludeSwitches", Arrays.asList("enable-automation"));
-//                ChromeOptions chromeOptions = new ChromeOptions();
+                // ChromeOptions chromeOptions = new ChromeOptions();
                 if (headless) {
                     // Headless mode
                     options.addArguments("--headless=new"); // Selenium 4 new headless mode
@@ -120,7 +106,6 @@ public class BaseTest {
                     options.addArguments("--disable-gpu");
 
                     // Set large viewport for full page
-                    options.addArguments("--window-size=1920,1080");
                     options.addArguments("--force-device-scale-factor=1");
                 }
                 driver = new ChromeDriver(options);

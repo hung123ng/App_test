@@ -1,13 +1,12 @@
 package pageObjects;
 
-import commons.BasePage;
-import io.qameta.allure.Step;
 import org.openqa.selenium.WebDriver;
 import org.testng.Assert;
-import pageUIs.CartPageUI;
+
+import commons.BasePage;
+import io.qameta.allure.Step;
 import pageUIs.HomePageUI;
 import pageUIs.ProductDetailsPageUI;
-import pageUIs.ProductListPageUI;
 
 public class ProductDetails extends BasePage {
     private WebDriver driver;
