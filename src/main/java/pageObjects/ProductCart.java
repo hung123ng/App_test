@@ -12,11 +12,13 @@ public class ProductCart extends BasePage {
     public ProductCart(WebDriver driver){ this.driver = driver; }
 
     public ProductCart miniCartPopup_Check_Title(){
+        System.out.println("MiniCartPopup check page title");
         isElementDisplayed(driver, CartPageUI.CartPage_Title);
         return PageGenerator.getCartPage(driver);
     }
     public ProductCart miniCartPopup_Check_InProduct(String productName, String size, String color, String qty){
-        sleepInSeconds(5);
+        System.out.println("MiniCartPopup check in product: " + productName + " - " + size + " - " + color + " - " + qty);
+        isElementDisplayed(driver, CartPageUI.CartPage_QtyInCart);
         String actualQty = getElementText(driver, CartPageUI.CartPage_QtyInCart);
         Assert.assertEquals(actualQty, qty);
 

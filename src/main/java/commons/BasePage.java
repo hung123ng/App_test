@@ -7,16 +7,23 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import pageUIs.BasePageUI;
+import utilities.*;
 
 import java.time.Duration;
 import java.util.List;
 import java.util.Set;
 
 public class BasePage {
-    private WebDriver driver;
+    protected WebDriver driver;
+    protected WebDriverWait wait;
+    protected ScreenshotHelper screenshotHelper;
 
+    public BasePage() {
+        this.wait = new WebDriverWait(driver, Duration.ofSeconds(GlobalConstants.LONG_TIMEOUT));
+        this.screenshotHelper = new ScreenshotHelper(driver, "test-output");
+    }
 
-    public static BasePage getBasePage() {
+    public BasePage getBasePage() {
         return new BasePage();
     }
 
@@ -248,6 +255,7 @@ public class BasePage {
     }
 
     public boolean isElementDisplayed(WebDriver driver, String locator) {
+        waitForElementVisible(driver, locator);
         return getElement(driver, locator).isDisplayed();
     }
 
@@ -424,5 +432,25 @@ public class BasePage {
 
     public boolean waitAllLoadingIconInvisible(WebDriver driver) {
         return waitForListElementInVisible(driver, BasePageUI.LOADING_ICON);
+    }
+
+    public void setAutoScreenshot(boolean enabled) {
+        screenshotHelper.setAutoScreenshot(enabled);
+    }
+
+    /**
+     * Take manual screenshot
+     */
+    public void takeScreenshot(String description) {
+        screenshotHelper.takeScreenshotForAllure(description);
+    }
+
+    /**
+     * Navigate với screenshot
+     */
+    public void navigateToUrl(String url) {
+        screenshotHelper.takeScreenshotForAllure("Before_Navigate_" + url);
+        driver.get(url);
+        screenshotHelper.takeScreenshotForAllure("After_Navigate_" + url);
     }
 }

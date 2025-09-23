@@ -1,8 +1,8 @@
 package pageObjects;
 
 import commons.BasePage;
+import io.qameta.allure.Step;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.support.ui.Sleeper;
 import pageUIs.HomePageUI;
 
 public class HomePage extends BasePage {
@@ -15,7 +15,7 @@ public class HomePage extends BasePage {
     public void checkLogo() {
         isElementDisplayed(driver, HomePageUI.landingLogo);
     }
-
+    @Step("Hover")
     public ProductList headerTransitNavigationMenu(String menu, String submenu) {
         if (menu == null || menu.isEmpty()) {
             System.out.println("Menu is EMPTY");

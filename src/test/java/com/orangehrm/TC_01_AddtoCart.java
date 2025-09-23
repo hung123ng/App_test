@@ -1,18 +1,20 @@
 package com.orangehrm;
 
 import commons.BaseTest;
+
+import org.openqa.selenium.Dimension;
 import org.openqa.selenium.WebDriver;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
+import org.testng.ITestResult;
+import org.testng.annotations.*;
 import pageObjects.HomePage;
 
 public class TC_01_AddtoCart extends BaseTest {
     private WebDriver driver;
 
-    @BeforeClass
+    @BeforeMethod
     public void beforeTest(){
-        driver = getWebdriver("chrome","https://demo.hyva.io/", false);
+        driver = getWebdriver("chrome","https://demo.hyva.io/", true);
+        driver.manage().window().setSize(new Dimension(1920, 1080));
     }
     @Test
     public void TC1(){
@@ -28,8 +30,8 @@ public class TC_01_AddtoCart extends BaseTest {
                 .miniCartPopup_Check_Title()
                 .miniCartPopup_Check_InProduct("Mona Pullover Hoodlie","XS","Orange","1");
     }
-    @AfterClass
-    public void after() {
+    @AfterMethod
+    public void tearDown(ITestResult result) {
         driver.quit();
     }
 }

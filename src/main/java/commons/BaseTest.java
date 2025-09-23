@@ -12,15 +12,53 @@ import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.safari.SafariOptions;
+import org.testng.ITestResult;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Optional;
+import org.testng.annotations.Parameters;
+import utilities.ScreenshotHelper;
 
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.Duration;
+import java.util.Arrays;
 import java.util.HashMap;
 
 public class BaseTest {
-    private WebDriver driver;
+    protected WebDriver driver;
+    protected ScreenshotHelper screenshotHelper;
+
+    @Parameters({"browser", "url"})
+    @BeforeMethod
+    public void beforeMethod(@Optional("chrome") String browserName,
+                             @Optional("https://demo.nopcommerce.com") String url) {
+        // Initialize WebDriver
+        driver = getWebdriver(browserName,"https://demo.hyva.io/", true);
+        driver.manage().window().maximize();
+
+        // Initialize ScreenshotHelper
+        screenshotHelper = new ScreenshotHelper(driver, "test-output/screenshots");
+    }
+
+    @AfterMethod
+    public void afterMethod(ITestResult result) {
+        // Chụp ảnh khi test failed
+        if (result.getStatus() == ITestResult.FAILURE) {
+            screenshotHelper.takeScreenshotForAllure("Test_Failed_" + result.getMethod().getMethodName());
+        } else if (result.getStatus() == ITestResult.SUCCESS) {
+            screenshotHelper.takeScreenshotForAllure("Test_Passed_" + result.getMethod().getMethodName());
+        }
+
+        // Final screenshot
+        screenshotHelper.takeScreenshotForAllure("Test_End");
+
+        // Close browser
+        if (driver != null) {
+            driver.quit();
+        }
+    }
 
     private void createDownloadDirectory(String downloadDir) {
         if (downloadDir != null && !downloadDir.isEmpty()) {
@@ -53,12 +91,39 @@ public class BaseTest {
                 break;
 
             case CHROME:
-                ChromeOptions chromeOptions = new ChromeOptions();
+                ChromeOptions options = new ChromeOptions();
+
+                // Tắt các thông báo không cần thiết
+                options.addArguments("--disable-notifications");
+                options.addArguments("--disable-popup-blocking");
+                options.addArguments("--disable-translate");
+                options.addArguments("--disable-extensions");
+
+                // Tối ưu cho screenshot
+                options.addArguments("--no-sandbox");
+                options.addArguments("--disable-dev-shm-usage");
+                options.addArguments("--disable-gpu");
+
+                // Set window size lớn để tránh scroll bar
+                options.addArguments("--window-size=1920,1080");
+                options.addArguments("--start-maximized");
+
+                // Enable DevTools cho CDP commands
+                options.setExperimentalOption("useAutomationExtension", false);
+                options.setExperimentalOption("excludeSwitches", Arrays.asList("enable-automation"));
+//                ChromeOptions chromeOptions = new ChromeOptions();
                 if (headless) {
-                    chromeOptions.addArguments("--headless=new");
-                    chromeOptions.addArguments("--disable-gpu");
+                    // Headless mode
+                    options.addArguments("--headless=new"); // Selenium 4 new headless mode
+                    options.addArguments("--no-sandbox");
+                    options.addArguments("--disable-dev-shm-usage");
+                    options.addArguments("--disable-gpu");
+
+                    // Set large viewport for full page
+                    options.addArguments("--window-size=1920,1080");
+                    options.addArguments("--force-device-scale-factor=1");
                 }
-                driver = new ChromeDriver(chromeOptions);
+                driver = new ChromeDriver(options);
                 break;
 
             case EDGE:

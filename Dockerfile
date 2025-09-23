@@ -11,7 +11,7 @@ RUN apt-get update && apt-get install -y \
     && apt-get install -y ./google-chrome-stable_current_amd64.deb \
     && rm google-chrome-stable_current_amd64.deb \
     # Sử dụng version cố định để tránh lỗi
-    && CHROME_VERSION="130.0.6723.69" \
+    && CHROME_VERSION="140.0.7339.185" \
     && echo "Installing chromedriver version: $CHROME_VERSION" \
     && wget -q "https://storage.googleapis.com/chrome-for-testing-public/$CHROME_VERSION/linux64/chromedriver-linux64.zip" -O chromedriver.zip \
     && unzip chromedriver.zip \
