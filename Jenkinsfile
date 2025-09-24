@@ -4,7 +4,7 @@ pipeline {
     }
     parameters {
         string(name: 'DOCKER_HUB_USER', defaultValue: 'hunghey', description: 'Docker Hub username')
-        string(name: 'DOCKER_IMAGE_NAME', defaultValue: 'luma-java-test', description: 'Docker image name')
+        string(name: 'DOCKER_IMAGE_NAME', defaultValue: 'myimage', description: 'Docker image name')
     }
     environment {
         JAVA_HOME = tool name: 'JDK21', type: 'jdk'
@@ -29,21 +29,31 @@ pipeline {
                 bat 'gradlew.bat clean build -x test'  // Build trên Windows
             }
         }
-        stage('Build Docker Image') {
-            steps {
-                script {
-                    bat """
-                        docker build -t ${DOCKER_HUB_USER}/${DOCKER_IMAGE_NAME}:latest .
-                    """
-                }
-            }
-        }
-        stage('Push Docker Image') {
+        // stage('Build Docker Image') {
+        //     steps {
+        //         script {
+        //             bat """
+        //                 docker build -t ${DOCKER_HUB_USER}/${DOCKER_IMAGE_NAME}:latest .
+        //             """
+        //         }
+        //     }
+        // // }
+        // stage('Push Docker Image') {
+        //     steps {
+        //         script {
+        //             bat """
+        //                 docker login -u ${DOCKER_HUB_USER} -p ${DOCKER_PASSWORD}
+        //                 docker push ${DOCKER_HUB_USER}/${DOCKER_IMAGE_NAME}:latest
+        //             """
+        //         }
+        //     }
+        // }
+        stage('Pull Docker Image') {
             steps {
                 script {
                     bat """
                         docker login -u ${DOCKER_HUB_USER} -p ${DOCKER_PASSWORD}
-                        docker push ${DOCKER_HUB_USER}/${DOCKER_IMAGE_NAME}:latest
+                        docker pull ${DOCKER_HUB_USER}/${DOCKER_IMAGE_NAME}:latest
                     """
                 }
             }
@@ -51,8 +61,11 @@ pipeline {
         stage('Run Tests in Docker') {
             steps {
                 script {
+                    // bat """
+                    //     docker run --rm ${DOCKER_HUB_USER}/${DOCKER_IMAGE_NAME}:latest
+                    // """
                     bat """
-                        docker run --rm ${DOCKER_HUB_USER}/${DOCKER_IMAGE_NAME}:latest
+                        docker run --rm -v "%WORKSPACE%\\allure-results:/app/allure-results" ${DOCKER_HUB_USER}/${DOCKER_IMAGE_NAME}:latest
                     """
                 }
             }
