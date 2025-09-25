@@ -2,6 +2,9 @@ pipeline {
     agent {
         label 'win'
     }
+    repositories {
+        mavenCentral()
+    }
     parameters {
         string(name: 'DOCKER_HUB_USER', defaultValue: 'hunghey', description: 'Docker Hub username')
         string(name: 'DOCKER_IMAGE_NAME', defaultValue: 'myimage', description: 'Docker image name')
@@ -24,11 +27,11 @@ pipeline {
                 checkout scm
             }
         }
-        stage('Build Project') {
-            steps {
-                bat 'gradlew.bat clean build -x test'  // Build trên Windows
-            }
-        }
+        // stage('Build Project') {
+        //     steps {
+        //         bat 'gradlew.bat clean build -x test'  // Build trên Windows
+        //     }
+        // }
         // stage('Build Docker Image') {
         //     steps {
         //         script {
@@ -61,11 +64,13 @@ pipeline {
         stage('Run Tests in Docker') {
             steps {
                 script {
-                    // bat """
-                    //     docker run --rm ${DOCKER_HUB_USER}/${DOCKER_IMAGE_NAME}:latest
-                    // """
                     bat """
-                        docker run --rm -v "%WORKSPACE%\\allure-results:/app/allure-results" ${DOCKER_HUB_USER}/${DOCKER_IMAGE_NAME}:latest
+                        docker run --rm -v "%WORKSPACE%\\allure-results:/app/allure-results" ${DOCKER_HUB_USER}/${DOCKER_IMAGE_NAME}:latest gradle test
+                        if not exist "%WORKSPACE%\\allure-results" (
+                            echo Allure results directory not found in %WORKSPACE%!
+                        ) else (
+                            dir "%WORKSPACE%\\allure-results"
+                        )
                     """
                 }
             }
@@ -73,10 +78,10 @@ pipeline {
         stage('Generate Allure Report') {
             steps {
                 bat """
-                    if exist allure-results (
-                        "${ALLURE_HOME}\\bin\\allure.bat" generate allure-results --clean -o allure-report
+                    if exist "%WORKSPACE%\\allure-results" (
+                        "${ALLURE_HOME}\\bin\\allure.bat" generate "%WORKSPACE%\\allure-results" --clean -o "%WORKSPACE%\\allure-report"
                     ) else (
-                        echo Allure results not found, skipping report generation.
+                        echo Allure results not found in %WORKSPACE%, skipping report generation.
                     )
                 """
             }
