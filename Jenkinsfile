@@ -2,9 +2,6 @@ pipeline {
     agent {
         label 'win'
     }
-    repositories {
-        mavenCentral()
-    }
     parameters {
         string(name: 'DOCKER_HUB_USER', defaultValue: 'hunghey', description: 'Docker Hub username')
         string(name: 'DOCKER_IMAGE_NAME', defaultValue: 'myimage', description: 'Docker image name')
