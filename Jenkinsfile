@@ -51,10 +51,17 @@ pipeline {
         stage('Pull Docker Image') {
             steps {
                 script {
-                    bat """
-                        docker login -u ${DOCKER_HUB_USER} -p ${DOCKER_PASSWORD}
-                        docker pull ${DOCKER_HUB_USER}/${DOCKER_IMAGE_NAME}:latest
-                    """
+                    withCredentials([string(credentialsId: 'docker-hub-password', variable: 'DOCKER_TOKEN')]) {
+                        bat """
+                            echo Logging in with user: ${DOCKER_HUB_USER}
+                            docker login -u ${DOCKER_HUB_USER} -p %DOCKER_TOKEN%
+                            if errorlevel 1 (
+                                echo Docker login failed! Check username and token.
+                                exit /b 1
+                            )
+                            docker pull ${DOCKER_HUB_USER}/${DOCKER_IMAGE_NAME}:latest
+                        """
+                    }
                 }
             }
         }
