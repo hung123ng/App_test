@@ -62,9 +62,10 @@ pipeline {
             steps {
                 script {
                     bat """
-                        docker run --rm -v "%WORKSPACE%\\allure-results:/app/allure-results" ${DOCKER_HUB_USER}/${DOCKER_IMAGE_NAME}:latest gradle test
+                        docker run --rm -v "%WORKSPACE%\\allure-results:/app/allure-results" ${DOCKER_HUB_USER}/${DOCKER_IMAGE_NAME}:latest gradle test --info
                         if not exist "%WORKSPACE%\\allure-results" (
-                            echo Allure results directory not found in %WORKSPACE%!
+                            echo Allure results directory not found in %WORKSPACE%! Check testNG.xml, Gradle config, or Docker volume.
+                            exit /b 1
                         ) else (
                             dir "%WORKSPACE%\\allure-results"
                         )

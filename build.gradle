@@ -1,6 +1,6 @@
 plugins {
     id 'java'
-    // id 'io.qameta.allure' version '2.34.1'
+    id 'io.qameta.allure' version '2.11.2'
 }
 
 java {
@@ -22,15 +22,19 @@ dependencies {
     implementation "commons-io:commons-io:${commonsIoVersion}"
     implementation "io.qameta.allure:allure-testng:${allureVersion}"
     implementation "io.qameta.allure:allure-attachments:${allureVersion}"
+    // https://mvnrepository.com/artifact/ru.yandex.qatools.ashot/ashot
+    implementation 'ru.yandex.qatools.ashot:ashot:1.5.4'
 }
-
 tasks.test {
     useTestNG(){
         suites('src/test/resources/testNG.xml')
-        outputDirectory = file("$projectDir/test-output")
+        outputDirectory = file("/app/allure-results")
     }
 
     testLogging {
         showStandardStreams = true
     }
+}
+allure {
+    version = "${allureVersion}"
 }
