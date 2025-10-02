@@ -1,6 +1,5 @@
 plugins {
     id 'java'
-//    id 'io.qameta.allure' version '3.0.0'
 }
 
 java {
@@ -27,7 +26,7 @@ dependencies {
 tasks.test {
     useTestNG(){
         suites('src/test/resources/testNG.xml')
-        outputDirectory = file("$projectDir/test-output")
+        outputDirectory = file("$projectDir/allure-results")
     }
 
     testLogging {

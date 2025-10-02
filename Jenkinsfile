@@ -24,71 +24,21 @@ pipeline {
                 checkout scm
             }
         }
-        // stage('Build Project') {
-        //     steps {
-        //         bat 'gradlew.bat clean build -x test'  // Build trên Windows
-        //     }
-        // }
-        // stage('Build Docker Image') {
-        //     steps {
-        //         script {
-        //             bat """
-        //                 docker build -t ${DOCKER_HUB_USER}/${DOCKER_IMAGE_NAME}:latest .
-        //             """
-        //         }
-        //     }
-        // // }
-        // stage('Push Docker Image') {
-        //     steps {
-        //         script {
-        //             bat """
-        //                 docker login -u ${DOCKER_HUB_USER} -p ${DOCKER_PASSWORD}
-        //                 docker push ${DOCKER_HUB_USER}/${DOCKER_IMAGE_NAME}:latest
-        //             """
-        //         }
-        //     }
-        // }
-        stage('Pull Docker Image') {
+        stage('Prepare Allure Directory') {
             steps {
-                script {
-                    withCredentials([string(credentialsId: 'docker-hub-password', variable: 'DOCKER_TOKEN')]) {
-                        bat """
-                            echo Logging in with user: ${DOCKER_HUB_USER}
-                            docker login -u ${DOCKER_HUB_USER} -p %DOCKER_TOKEN%
-                            if errorlevel 1 (
-                                echo Docker login failed! Check username and token.
-                                exit /b 1
-                            )
-                            docker pull ${DOCKER_HUB_USER}/${DOCKER_IMAGE_NAME}:latest
-                        """
-                    }
-                }
+                bat '''
+                    if not exist allure-results mkdir allure-results
+                    echo Allure results directory created at: %CD%\\allure-results
+                '''
             }
         }
         stage('Run Tests in Docker') {
             steps {
                 script {
                     bat """
-                        docker run --rm -v "%WORKSPACE%\\allure-results:/app/allure-results" ${DOCKER_HUB_USER}/${DOCKER_IMAGE_NAME}:latest gradle test --info
-                        if not exist "%WORKSPACE%\\allure-results" (
-                            echo Allure results directory not found in %WORKSPACE%! Check testNG.xml, Gradle config, or Docker volume.
-                            exit /b 1
-                        ) else (
-                            dir "%WORKSPACE%\\allure-results"
-                        )
-                    """
+                        docker run --rm -v "%CD%\\allure-results:/app/build/allure-results" ${DOCKER_HUB_USER}/${DOCKER_IMAGE_NAME}:latest
+                   """
                 }
-            }
-        }
-        stage('Generate Allure Report') {
-            steps {
-                bat """
-                    if exist "%WORKSPACE%\\allure-results" (
-                        "${ALLURE_HOME}\\bin\\allure.bat" generate "%WORKSPACE%\\allure-results" --clean -o "%WORKSPACE%\\allure-report"
-                    ) else (
-                        echo Allure results not found in %WORKSPACE%, skipping report generation.
-                    )
-                """
             }
         }
     }
