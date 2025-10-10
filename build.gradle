@@ -3,7 +3,7 @@ plugins {
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_21 // Hoặc phiên bản Java bạn sử dụng
+    sourceCompatibility = JavaVersion.VERSION_21
     targetCompatibility = JavaVersion.VERSION_21
 }
 
@@ -17,6 +17,7 @@ compileTestJava.options.encoding = 'UTF-8'
 dependencies {
     implementation "org.seleniumhq.selenium:selenium-java:${seleniumVersion}"
     implementation "org.testng:testng:${testngVersion}"
+    testImplementation "org.aspectj:aspectjweaver:${aspectjVersion}"
     implementation "org.slf4j:slf4j-simple:${slf4jVersion}"
     implementation "commons-io:commons-io:${commonsIoVersion}"
     implementation "io.qameta.allure:allure-testng:${allureVersion}"
@@ -28,6 +29,9 @@ tasks.test {
         suites('src/test/resources/testNG.xml')
         outputDirectory = file("$projectDir/allure-results")
     }
+    jvmArgs "-javaagent:${configurations.testRuntimeClasspath
+            .filter { it.name.contains('aspectjweaver') }.singleFile}"
+    systemProperty "allure.results.directory", "allure-results"
 
     testLogging {
         showStandardStreams = true
