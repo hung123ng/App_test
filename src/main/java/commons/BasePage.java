@@ -6,7 +6,6 @@ import org.openqa.selenium.support.Color;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import pageUIs.BasePageUI;
 
 import java.time.Duration;
 import java.util.List;
@@ -412,23 +411,6 @@ public class BasePage {
 
     public void waitForElementClickable(WebDriver driver, String locator, String restParameter) {
         new WebDriverWait(driver, Duration.ofSeconds(GlobalConstants.LONG_TIMEOUT)).until(ExpectedConditions.elementToBeClickable(getByLocator(castParameter(locator, restParameter))));
-    }
-
-    public void uploadMultipleFiles(WebDriver driver, String... fileNames) {
-        String filePath = GlobalConstants.getUploadPath();
-
-        String fullFileName = " ";
-
-        for (String file : fileNames) {
-            fullFileName += filePath + file + "\n";
-        }
-        fullFileName = fullFileName.trim();
-
-        getElement(driver, BasePageUI.UPLOAD_FILE_TYPE).sendKeys(fullFileName);
-    }
-
-    public boolean waitAllLoadingIconInvisible(WebDriver driver) {
-        return waitForListElementInVisible(driver, BasePageUI.LOADING_ICON);
     }
 
 }

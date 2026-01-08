@@ -22,6 +22,7 @@ dependencies {
     implementation "commons-io:commons-io:${commonsIoVersion}"
     implementation "io.qameta.allure:allure-testng:${allureVersion}"
     implementation "io.qameta.allure:allure-attachments:${allureVersion}"
+    implementation 'io.appium:java-client:10.0.0'
 }
 
 tasks.test {
@@ -29,10 +30,6 @@ tasks.test {
         suites('src/test/resources/testNG.xml')
         outputDirectory = file("$projectDir/allure-results")
     }
-    jvmArgs "-javaagent:${configurations.testRuntimeClasspath
-            .filter { it.name.contains('aspectjweaver') }.singleFile}"
-    systemProperty "allure.results.directory", "allure-results"
-
     testLogging {
         showStandardStreams = true
     }
